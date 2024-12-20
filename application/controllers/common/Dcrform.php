@@ -65,7 +65,7 @@ class DcrForm extends MY_Controller {
             // Handle File Upload
             $config['upload_path'] = './files/' . $this->session->userdata('user_id');
             $config['allowed_types'] = 'pdf';
-            $config['max_size'] = 1000;
+            $config['max_size'] = 300000;
             $this->load->helper('string');
             // TODO: fix random file name generation
             $config['file_name'] = random_string('alnum', 15) .'.pdf';
@@ -134,9 +134,10 @@ class DcrForm extends MY_Controller {
             $user = $this->User_model->get_user( $this->session->userdata('user_id'));
             $data = array(
                 'Status_DeptHead' => 'Already Sent to Document Controller',
-                'ESignature_DeptHead' => $user->e_signature,
+                'ESignature_DeptHead' => $user['e_signature'],
                 'Name_Of_Approving_Authority' => $this->input->post('Name_Of_Approving_Authority_Brkt'),
                 'Date_Of_Approval' => date('m/d/Y'), // Sets the current date
+                'User_ID' => $this->session->userdata('user_id'),
             );
 
             $this->Dcrform_model->update_dcr_form($this->input->post('Random_Unique_Code_Brkt'), $data);
@@ -194,26 +195,32 @@ class DcrForm extends MY_Controller {
 
         // Generate the PDF
         $html = $this->load->view('common/pdf_template', $data, true); // Load the view file
-        pdf_create($html, 'DCR_' . $random_unique_code); // pdf_create() is from your dompdf_helper
+        pdf_create($html, 'DCR_' . $random_unique_code,false); // pdf_create() is from your dompdf_helper
     }
 
 
     public function update_dcrform_docucontroller($random_unique_code) {
         $data = array(
-            'Status_DocuController' => 'Already Sent to Director for QAIE',
+            'Status_DocuController' => $this->input->post('Status_DocuController'),
+            'DocuController_Comments' => $this->input->post('DocuController_Comments'),
         );
-
+        if ($this->input->post('Status_DocuController') === 'Revision needed, returned to Requester') {
+            $data['Status_Requester'] = 'Revisions Requested';
+        }
         $this->db->where('Random_Unique_Code', $random_unique_code);
         $this->db->update('qaiedirector_dcrform', $data);
         redirect('dcrform/list');
     }
 
     public function update_dcrform_qaie_director($random_unique_code) {
+        $user = $this->User_model->get_user( $this->session->userdata('user_id'));
         $data = array(
             'Request_Status' => $this->input->post('Request_Status_Brkt'),
             'QAIE_Directors_Comments' => $this->input->post('QAIE_Directors_Comments_Brkt'),
             'Name_Of_QAIE_Director' => $this->input->post('Name_Of_QAIE_Director_Brkt'),
             'Date_Of_QAIE_Director_Action'=> $this->input->post('Date_Of_QAIE_Director_Action_Brkt'),
+            'User_ID' => $this->session->userdata('user_id'),
+            'ESignature_DoQ' => $user['e_signature'],
         );
 
         $this->db->where('Random_Unique_Code', $random_unique_code);
@@ -228,6 +235,13 @@ class DcrForm extends MY_Controller {
             'User_Type' => 'Document Controller'
         );
         return $this->db->insert('y6_dcrforms_logs', $log_data);
+    }
+
+    public function edit_view_form() {
+        $this->load->model('Dcrform_model');
+        $content_data['records'] = $this->Dcrform_model->get_all_descriptions();
+        $data['content'] = $this->load->view('common/pdf_new_template', $content_data, TRUE);
+        $this->load->view('common/template/page', $data);
     }
 
 }

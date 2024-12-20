@@ -2,6 +2,14 @@
     <div class="container-login">
         <div class="login-box">
         <?php echo validation_errors(); ?>
+
+        <?php if ($this->session->flashdata('error')) {
+            echo '<div class="alert alert-danger">' . $this->session->flashdata('error') . '</div>';
+        } ?>
+
+        <?php if ($this->session->flashdata('message')) {
+            echo '<div class="alert alert-info">' . $this->session->flashdata('message') . '</div>';
+        } ?>
         <?php echo form_open('auth/login_submit'); ?>
             <div class="input-group flex-nowrap">
                 <!-- <span class="input-group-text" id="addon-wrapping">Username</span> -->

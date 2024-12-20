@@ -1,25 +1,29 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends MY_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/userguide3/general/urls.html
-	 */
+	public function __construct() {
+        parent::__construct();
+        // Load the database and any necessary models or helpers
+        $this->load->database();
+        $this->load->model('Event_Model');
+        $this->load->helper('url');
+        $this->load->helper('form');
+        $this->load->library('session');
+
+        $this->check_login();
+    }
+
 	public function index()
 	{
-		$this->load->view('welcome_message');
+        if (!in_array($this->session->userdata('role'), ["Super Admin", 'Administrator'])) {
+            $data['events'] = $this->Event_Model->get_events();
+            $data['event_types'] = $this->Event_Model->get_event_types();
+            $data['neas'] = $this->db->get('home_nea_datatable')->result_array();
+            $this->load->view('calendar', $data);
+        } else {
+            redirect('/admin');
+        }
 	}
 }

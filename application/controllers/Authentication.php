@@ -34,7 +34,8 @@ class Authentication extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             // Form validation failed, reload the login view
-            $this->load->view('login');
+            $this->session->set_flashdata('error', 'Invalid username or password');
+            redirect('login');
         } else {
             // Form validation passed
             $username = $this->input->post('username');
@@ -49,11 +50,16 @@ class Authentication extends CI_Controller {
                 $this->session->set_userdata('user_id', $user->user_id);
                 $this->session->set_userdata('role', $user->type);
                 $this->session->set_userdata('office', $user->office);
-                redirect('User'); // Redirect to a protected page
+                $this->session->set_userdata('avatar', $user->my_img);
+                if ($user->type <> "Super Admin") {
+                    redirect(''); // Redirect to a protected page
+                } else {
+                    redirect('admin'); // Redirect to a protected page
+                }
+
             } else {
                 // Invalid login, reload the login view with an error message
-                $data['error'] = 'Invalid username or password';
-                $this->session->set_flashdata('error', '');
+                $this->session->set_flashdata('error', 'Invalid username or password');
                 redirect('login');
             }
         }

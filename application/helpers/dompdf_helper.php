@@ -5,17 +5,20 @@ use Dompdf\Dompdf;
 
 
 
-function pdf_create($html, $filename = '', $stream = TRUE) {
+function pdf_create($html, $filename = '', $download = true) {
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
 
-    // require_once APPPATH . 'third_party/dompdf/autoload.inc.php';
-    $pdf = new Dompdf();
-    $pdf->load_html($html);
-    $pdf->setPaper('A4', 'portrait');
-    $pdf->render();
-    if ($stream) {
-        $pdf->stream($filename . ".pdf", array("Attachment" => 1));
+    // Set the Content-Disposition based on download parameter
+    if ($download) {
+        $dompdf->stream($filename . ".pdf", array("Attachment" => true));
     } else {
-        return $pdf->output();
+        // Inline display
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '.pdf"');
+        echo $dompdf->output();
     }
 }
 ?>

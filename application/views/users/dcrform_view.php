@@ -1,5 +1,5 @@
 <?php $this->load->view('includes/header'); ?>
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
         <h2 class="text-center mb-4">Document Change Request Form</h2>
 
         <?php if ($this->session->flashdata('success')): ?>
@@ -37,7 +37,7 @@
 
             <div class="form-group">
                 <label for="office">From (Office)</label>
-                <select name="From_Office_Brkt" id="office-list" class="form-control" required>
+                <select name="From_Office_Brkt" id="office_list" class="form-control" required>
                     <option value="" disabled selected>---Select Office---</option>
                     <?php foreach ($offices as $office): ?>
                         <option value="<?php echo $office->Office_Name; ?>"><?php echo $office->Office_Name; ?></option>
@@ -100,33 +100,8 @@
                 <label for="newDocumentRevision">New Document Revision</label>
                 <input type="text" class="form-control" name="New_Document_Revision_Brkt" maxlength="100">
             </div>
-
+                <br>
             <button type="submit" name="Register_Brkt" class="btn btn-primary btn-block">Submit</button>
         </form>
     </div>
-
-    <!-- Include Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript">
-        function getOffices(departmentName) {
-            if (departmentName) {
-                $.ajax({
-                    type: 'POST',
-                    url: '<?php echo base_url("dcrform/getOffices"); ?>',
-                    data: { departmentName: departmentName },
-                    success: function (response) {
-                        $('#office-list').html('<option value="">---Select Office---</option>');
-                        var offices = JSON.parse(response);
-                        $.each(offices, function (index, office) {
-                            $('#office-list').append('<option value="' + office.Office_Name + '">' + office.Office_Name + '</option>');
-                        });
-                    }
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+<?php $this->load->view('includes/footer'); ?>

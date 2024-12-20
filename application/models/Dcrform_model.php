@@ -38,4 +38,8 @@ class Dcrform_model extends CI_Model {
 
         return $query->result_array(); // Fetch all results as an array
     }
+
+    public function get_all_descriptions() {
+        return $this->db->get('qaiedirector_dcrform_desc')->result_array();
+    }
 }

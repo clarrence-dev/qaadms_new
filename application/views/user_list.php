@@ -6,6 +6,8 @@
         Create User
     </button>
 
+
+
     <!-- Modal -->
     <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">

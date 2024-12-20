@@ -14,9 +14,9 @@ class Users extends CI_Controller {
 
     public function index() {
         $users = $this->User_model->get_users();
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($users));
+        // $this->output
+        //     ->set_content_type('application/json')
+        //     ->set_output(json_encode($users));
     }
 
     public function view($id) {
